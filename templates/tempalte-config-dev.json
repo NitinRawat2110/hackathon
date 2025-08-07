@@ -1,0 +1,23 @@
+{
+  "Parameters": {
+    "AvailabilityZones": "us-west-2a, us-west-2b, us-west-2c",
+    "DatabasePassword": "ArtifactoryDatabasePassword",
+    "XrayDatabasePassword": "XrayDatabasePassword",
+    "SmLicenseName": "arn:aws:secretsmanager:us-west-2:1234567890:secret:dev/artifactory/licenses-qQejsJ",
+    "MasterKey": "PacArtifactoryMasterKey",
+    "ArtifactoryVersion": "7.98.14",
+    "NumberOfSecondary": "1",
+    "InstallXray": "true",
+    "XrayNumberOfSecondary": "1",
+    "XrayVersion": "3.59.7",
+    "AccessCidr": "0.0.0.0/0",
+    "SubnetCidr": "10.1.0.0/21",
+    "CertificateDomain": "nextcloud.com",
+    "ArtifactoryServerName": "artifinity-dev",
+    "ArtifactoryCertificateArn": "arn:aws:acm:us-west-2:1234567890:certificate/80ea4090-d4e4-494d-9fdb-4c813478543d",
+    "ArtifactoryDnsZoneId": "Z02370381XCXHF6VTQH1H"
+  },
+  "Tags": {
+
+  }
+}
