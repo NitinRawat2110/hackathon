@@ -63,6 +63,27 @@ Parameters:
     Type: String
   EfsSecurityGroup:
     Type: String
+  XrayDatabaseAllocatedStorage:
+    Type: Number
+    Default: 2500
+  XrayDatabaseStorageType:
+    Type: String
+    Default: gp3
+  XrayDatabaseIops:
+    Type: Number
+    Default: 3000
+  XrayDatabaseInstance:
+    Type: String
+    Default: db.m5.4xlarge
+  XrayDatabaseName:
+    Type: String
+    Default: xraydb
+  XrayDatabaseUser:
+    Type: String
+    Default: xray
+  XrayDatabasePassword:
+    Type: String
+    NoEcho: true
 
 Mappings:
   JavaOptionstoInstance:
@@ -218,6 +239,27 @@ Resources:
       StorageEncrypted: true
       VPCSecurityGroups:
         - !Ref ArtifactoryDatabaseSG
+  XrayDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: !Ref XrayDatabaseAllocatedStorage
+      StorageType: !Ref XrayDatabaseStorageType
+      AvailabilityZone: !If [IsMultiAzDatabase, !Ref AWS::NoValue, !Select ['0', !Ref AvailabilityZones]]
+      BackupRetentionPeriod: 30
+      DeletionProtection: true
+      EnablePerformanceInsights: true
+      DBInstanceClass: !Ref XrayDatabaseInstance
+      Iops: !Ref XrayDatabaseIops
+      Engine: postgres
+      EngineVersion: 11.13
+      DBName: !Ref XrayDatabaseName
+      MasterUsername: !Ref XrayDatabaseUser
+      MasterUserPassword: !Ref XrayDatabasePassword
+      PubliclyAccessible: false
+      MultiAZ: !Ref MultiAzDatabase
+      StorageEncrypted: true
+      VPCSecurityGroups:
+        - !Ref ArtifactoryDatabaseSG
   ArtifactoryDatabaseSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -368,12 +410,14 @@ Outputs:
       - ArtifactoryDatabaseEndpointAddress: !GetAtt ArtifactoryDatabase.Endpoint.Address
   XrayMasterDatabaseUrl:
     Value: !Sub
-      - "${ArtifactoryDatabaseEndpointAddress}:5432/${DatabaseName}?sslmode=disable"
-      - ArtifactoryDatabaseEndpointAddress: !GetAtt ArtifactoryDatabase.Endpoint.Address
+      - "jdbc:postgresql://${XrayDatabaseEndpointAddress}:5432/${XrayDatabaseName}?sslmode=require"
+      - XrayDatabaseEndpointAddress: !GetAtt XrayDatabase.Endpoint.Address 
+        XrayDatabaseName: !Ref XrayDatabaseName
   XrayDatabaseUrl:
     Value: !Sub
-      - "${ArtifactoryDatabaseEndpointAddress}:5432/xraydb?sslmode=disable"
-      - ArtifactoryDatabaseEndpointAddress: !GetAtt ArtifactoryDatabase.Endpoint.Address
+      - "jdbc:postgresql://${XrayDatabaseEndpointAddress}:5432/${XrayDatabaseName}?sslmode=require"
+      - XrayDatabaseEndpointAddress: !GetAtt XrayDatabase.Endpoint.Address
+        XrayDatabaseName: !Ref XrayDatabaseName
   JavaOpts:
     Value: !Sub
       - "-Xms${min}g -Xmx${max}g"
@@ -385,3 +429,9 @@ Outputs:
     Value: !FindInMap [JavaOptionstoInstance, !Ref InstanceType, DeploymentSize]
   ArtifactoryEfsFileSystem:
     Value: !Ref ArtifactoryEfsFileSystem
+  XrayDatabaseEndpoint:
+    Description: Xray RDS endpoint
+    Value: !GetAtt XrayDatabase.Endpoint.Address
+  XrayDatabasePort:
+    Description: Xray RDS port
+    Value: 5432
