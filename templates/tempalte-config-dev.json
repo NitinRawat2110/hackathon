@@ -2,7 +2,10 @@
   "Parameters": {
     "AvailabilityZones": "us-west-2a, us-west-2b, us-west-2c",
     "DatabasePassword": "ArtifactoryDatabasePassword",
+    "XrayDatabaseName": "xraydb",
+    "XrayDatabaseUser": "xray",
     "XrayDatabasePassword": "XrayDatabasePassword",
+    "XrayDatabasePort": "5432"
     "SmLicenseName": "arn:aws:secretsmanager:us-west-2:1234567890:secret:dev/artifactory/licenses-qQejsJ",
     "MasterKey": "PacArtifactoryMasterKey",
     "ArtifactoryVersion": "7.98.14",
