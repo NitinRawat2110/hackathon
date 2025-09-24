@@ -65,6 +65,8 @@ Parameters:
   XrayDatabasePassword:
     Type: String
     NoEcho: 'true'
+  XrayDatabaseName:             # -- Added for dedicated Xray DB name --
+    Type: String
   XrayMasterDatabaseUrl:
     Type: String
   XrayDatabaseUrl:
@@ -248,11 +250,12 @@ Resources:
                     extra_java_opts: ${ExtraJavaOptions}
                     db_type: ${DatabaseType}
                     db_driver: ${DatabaseDriver}
-                    db_master_url: postgresql://${DatabaseUser}:${DatabasePassword}@${XrayMasterDatabaseUrl}
+                    db_master_url: postgresql://${XrayDatabaseUser}:${XrayDatabasePassword}@${XrayMasterDatabaseUrl}
                     db_url: postgres://${XrayDatabaseUrl}
-                    db_master_user: ${DatabaseUser}
+                    db_master_user: ${XrayDatabaseUser}  # <-- reference the Xray DB user—not Artifactory
                     db_user: ${XrayDatabaseUser}
                     db_password: ${XrayDatabasePassword}
+                    db_name: ${XrayDatabaseName}       # <-- Uses new parameter
                     xray_version: ${XrayVersion}
               mode: "0400"
             /root/.vault_pass.txt:
