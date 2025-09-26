@@ -184,6 +184,10 @@ Metadata:
         default: Xray Database user
       XrayDatabasePassword:
         default: Xray Database password
+      XrayDatabaseName:
+        Description: Name of the dedicated Xray database.
+        Default: xraydb
+        Type: String
 Parameters:
   Stage:
     Type: String
@@ -1237,8 +1241,8 @@ Resources:
         #       - !Ref 'QsS3BucketRegion'
         DatabaseDriver: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseDriver
         DatabaseType: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseType
-        DatabaseUser: !Ref DatabaseUser
-        DatabasePassword: !Ref DatabasePassword
+#        DatabaseUser: !Ref DatabaseUser <-------- for artifactory so commenting out
+#        DatabasePassword: !Ref DatabasePassword <-------- for artifactory so commenting out
         # DatabasePassword: !Sub '{{resolve:ssm-secure:${DatabasePassword}:1}}'
         MasterKey: !Ref MasterKey
         # MasterKey: !Sub '{{resolve:ssm-secure:${MasterKey}:1}}'
@@ -1249,6 +1253,7 @@ Resources:
         JfrogInternalUrl: !Sub "http://${ArtifactoryInternalElb.DNSName}"
         XrayDatabaseUser: !Ref XrayDatabaseUser
         XrayDatabasePassword: !Ref XrayDatabasePassword
+        XrayDatabaseName: !Ref XrayDatabaseName
         # XrayDatabasePassword: !Sub '{{resolve:ssm-secure:${XrayDatabasePassword}:1}}'
         XrayMasterDatabaseUrl: !GetAtt ArtifactoryCoreInfraStack.Outputs.XrayMasterDatabaseUrl
         XrayDatabaseUrl: !GetAtt ArtifactoryCoreInfraStack.Outputs.XrayDatabaseUrl
@@ -1294,8 +1299,8 @@ Resources:
         #       - !Ref 'QsS3BucketRegion'
         DatabaseDriver: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseDriver
         DatabaseType: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseType
-        DatabaseUser: !Ref DatabaseUser
-        DatabasePassword: !Ref DatabasePassword
+#        DatabaseUser: !Ref DatabaseUser <-------- for artifactory so commenting out 
+#        DatabasePassword: !Ref DatabasePassword <-------- for artifactory so commenting out
         # DatabasePassword: !Sub '{{resolve:ssm-secure:${DatabasePassword}:1}}'
         MasterKey: !Ref MasterKey
         # MasterKey: !Sub '{{resolve:ssm-secure:${MasterKey}:1}}'
@@ -1306,6 +1311,7 @@ Resources:
         JfrogInternalUrl: !Sub "http://${ArtifactoryInternalElb.DNSName}"
         XrayDatabaseUser: !Ref XrayDatabaseUser
         XrayDatabasePassword: !Ref XrayDatabasePassword
+        XrayDatabaseName: !Ref XrayDatabaseName
         # XrayDatabasePassword: !Sub '{{resolve:ssm-secure:${XrayDatabasePassword}:1}}'
         XrayMasterDatabaseUrl: !GetAtt ArtifactoryCoreInfraStack.Outputs.XrayMasterDatabaseUrl
         XrayDatabaseUrl: !GetAtt ArtifactoryCoreInfraStack.Outputs.XrayDatabaseUrl
