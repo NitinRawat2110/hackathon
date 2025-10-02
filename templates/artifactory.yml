@@ -186,9 +186,15 @@ Metadata:
       XrayDatabasePassword:
         default: Xray Database password
       XrayDatabaseName:
-        Description: Name of the dedicated Xray database.
         Default: xraydb
-        Type: String
+      XrayDatabaseInstance:
+        default: Database instance type
+      XrayDatabaseAllocatedStorage:
+        default: Database allocated storage
+      XrayDatabaseStorageType:
+        default: Database storage type
+      XrayDatabaseIops:
+        default: Database iops
 Parameters:
   Stage:
     Type: String
@@ -458,7 +464,7 @@ Parameters:
     # Type: AWS::SSM::Parameter::Name
     # Type: String
     Type: AWS::SSM::Parameter::Value<String>
-    # Default: ArtifactoryDatabasePassword
+    # Default: PacArtifactoryDatabasePassword
   DatabaseInstance:
     Description: Size of the database to be deployed as part of the Quick Start.
     AllowedValues:
@@ -571,6 +577,40 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     # Type: AWS::SSM::Parameter::Name
     # Type: String
+  XrayDatabaseName:
+    Description: Name of the dedicated Xray database.
+    Default: xraydb
+    Type: String
+  XrayDatabaseStorageType:
+    Description: Database storage type
+    AllowedValues:
+      - gp3
+      - gp2
+      - io1
+    ConstraintDescription: Must be valid RDS storage type
+    Default: gp3
+    Type: String
+  XrayDatabaseAllocatedStorage:
+    Description: Size in gigabytes of the available storage for the database instance.
+    MinValue: 2500
+    MaxValue: 3500
+    Default: 2500
+    Type: Number
+  XrayDatabaseInstance:
+    Description: Size of the database to be deployed as part of the Quick Start.
+    AllowedValues:
+      - db.m5.4xlarge
+      - db.m5.8xlarge
+      - db.m5.12xlarge
+      - db.m5.16xlarge
+      - db.m5.24xlarge
+    ConstraintDescription: Must be a valid database Instance Type.
+    Default: db.m5.4xlarge
+    Type: String
+  XrayDatabaseIops:
+    Description: Allocated iops for Xray database
+    Type: Number
+    Default: 3000
 
 Conditions:
   # EnableBastion: !Equals [!Ref 'ProvisionBastionHost', 'Enabled']
@@ -682,6 +722,13 @@ Resources:
         InstanceType: !Ref InstanceType
         ArtifactoryHostRole: !Ref ArtifactoryHostRole
         EfsSecurityGroup: !Ref ArtifactoryEc2Sg
+        XrayDatabaseAllocatedStorage: !Ref XrayDatabaseAllocatedStorage
+        XrayraDatabaseStorageType: !Ref XrayDatabaseStorageType
+        XrayDatabaseUser: !Ref XrayDatabaseUser
+        XrayDatabasePassword: !Ref XrayDatabasePassword
+        XrayDatabaseInstance: !Ref XrayDatabaseInstance
+        XrayDatabaseName: !Ref XrayDatabaseName
+        XrayDatabaseIops: !Ref XrayDatabaseIops
 
   ArtifactoryDnsRecord:
     Type: AWS::Route53::RecordSet
@@ -755,6 +802,7 @@ Resources:
       LoadBalancerArn: !Ref ArtifactoryElb
       Port: 443
       Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
 
   ArtifactoryElbListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -1242,8 +1290,8 @@ Resources:
         #       - !Ref 'QsS3BucketRegion'
         DatabaseDriver: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseDriver
         DatabaseType: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseType
-#        DatabaseUser: !Ref DatabaseUser <-------- for artifactory so commenting out
-#        DatabasePassword: !Ref DatabasePassword <-------- for artifactory so commenting out
+        # DatabaseUser: !Ref DatabaseUser  #for artifactory so commenting out
+        # DatabasePassword: !Ref DatabasePassword #for artifactory so commenting out
         # DatabasePassword: !Sub '{{resolve:ssm-secure:${DatabasePassword}:1}}'
         MasterKey: !Ref MasterKey
         # MasterKey: !Sub '{{resolve:ssm-secure:${MasterKey}:1}}'
@@ -1300,8 +1348,8 @@ Resources:
         #       - !Ref 'QsS3BucketRegion'
         DatabaseDriver: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseDriver
         DatabaseType: !GetAtt ArtifactoryCoreInfraStack.Outputs.DatabaseType
-#        DatabaseUser: !Ref DatabaseUser <-------- for artifactory so commenting out 
-#        DatabasePassword: !Ref DatabasePassword <-------- for artifactory so commenting out
+        # DatabaseUser: !Ref DatabaseUser #for artifactory so commenting out
+        # DatabasePassword: !Ref DatabasePassword #for artifactory so commenting out
         # DatabasePassword: !Sub '{{resolve:ssm-secure:${DatabasePassword}:1}}'
         MasterKey: !Ref MasterKey
         # MasterKey: !Sub '{{resolve:ssm-secure:${MasterKey}:1}}'
