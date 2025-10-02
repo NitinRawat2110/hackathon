@@ -249,6 +249,7 @@ Resources:
       DeletionProtection: true
       EnablePerformanceInsights: true
       DBInstanceClass: !Ref XrayDatabaseInstance
+      DBSubnetGroupName: !ImportValue RDSSubnetGroupID
       Iops: !Ref XrayDatabaseIops
       Engine: postgres
       EngineVersion: 11.13
@@ -411,13 +412,11 @@ Outputs:
   XrayMasterDatabaseUrl:
     Value: !Sub
       - "jdbc:postgresql://${XrayDatabaseEndpointAddress}:5432/${XrayDatabaseName}?sslmode=require"
-      - XrayDatabaseEndpointAddress: !GetAtt XrayDatabase.Endpoint.Address 
-        XrayDatabaseName: !Ref XrayDatabaseName
+      - XrayDatabaseEndpointAddress: !GetAtt XrayDatabase.Endpoint.Address
   XrayDatabaseUrl:
     Value: !Sub
       - "jdbc:postgresql://${XrayDatabaseEndpointAddress}:5432/${XrayDatabaseName}?sslmode=require"
       - XrayDatabaseEndpointAddress: !GetAtt XrayDatabase.Endpoint.Address
-        XrayDatabaseName: !Ref XrayDatabaseName
   JavaOpts:
     Value: !Sub
       - "-Xms${min}g -Xmx${max}g"
